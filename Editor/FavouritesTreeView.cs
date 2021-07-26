@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Experimental;
 using UnityEditor.IMGUI.Controls;
 using UnityEditor.SceneManagement;
-
 
 namespace FavouritesEd
 {
@@ -286,18 +285,9 @@ namespace FavouritesEd
 			EditorSceneManager.MarkSceneDirty(go.scene);
 		}
 
-		private static System.Func<string> Invoke_folderIconName;
-
 		private static string FolderIconName()
 		{
-			if (Invoke_folderIconName == null)
-			{
-				Assembly asm = Assembly.GetAssembly(typeof(Editor));
-				PropertyInfo prop = asm.GetType("UnityEditorInternal.EditorResourcesUtility").GetProperty("folderIconName", (BindingFlags.Static | BindingFlags.Public));
-				MethodInfo method = prop.GetGetMethod(true);
-				Invoke_folderIconName = (System.Func<string>)System.Delegate.CreateDelegate(typeof(System.Func<string>), method);
-			}
-			return Invoke_folderIconName();
+			return EditorResources.folderIconName;
 		}
 
 		// ------------------------------------------------------------------------------------------------------------
