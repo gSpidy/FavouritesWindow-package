@@ -11,7 +11,7 @@ namespace FavouritesEd
 		private static readonly GUIContent GC_Add = new GUIContent("+", "Add category");
 		private static readonly GUIContent GC_Remove = new GUIContent("-", "Remove selected");
 
-		[SerializeField] private FavouritesAsset asset; 
+		[SerializeField] private FavouritesData data; 
 		[SerializeField] private TreeViewState treeViewState;
 		[SerializeField] private FavouritesTreeView treeView; 
 		[SerializeField] private SearchField searchField;
@@ -36,7 +36,7 @@ namespace FavouritesEd
 
 		private void UpdateTreeview()
 		{
-			if (asset == null)
+			if (data == null)
 			{
 				LoadAsset();
 			}
@@ -56,7 +56,7 @@ namespace FavouritesEd
 				searchField.downOrUpArrowKeyPressed += treeView.SetFocusAndEnsureSelectedItem;
 			}
 
-			treeView.LoadAndUpdate(asset);
+			treeView.LoadAndUpdate(data);
 			Repaint();
 		}
 
@@ -97,8 +97,8 @@ namespace FavouritesEd
 			wiz.Close();
 			if (string.IsNullOrEmpty(s)) return;
 
-			asset.AddCategory(s);
-			EditorUtility.SetDirty(asset);
+			data.AddCategory(s);
+			EditorUtility.SetDirty(data);
 
 			UpdateTreeview();
 			Repaint();
@@ -132,33 +132,33 @@ namespace FavouritesEd
 				}
 
 				// remove favourites linked to this category
-				for (int i = asset.favs.Count - 1; i >= 0; i--)
+				for (int i = data.favs.Count - 1; i >= 0; i--)
 				{
-					if (asset.favs[i].categoryId == ele.category.id) asset.favs.RemoveAt(i);
+					if (data.favs[i].categoryId == ele.category.id) data.favs.RemoveAt(i);
 				}
 
 				// remove category
-				for (int i = 0;i < asset.categories.Count; i++)
+				for (int i = 0;i < data.categories.Count; i++)
 				{
-					if (asset.categories[i].id == ele.category.id)
+					if (data.categories[i].id == ele.category.id)
 					{
-						asset.categories.RemoveAt(i);
+						data.categories.RemoveAt(i);
 						break;
 					}
 				}
 
-				EditorUtility.SetDirty(asset);
+				EditorUtility.SetDirty(data);
 			}
 			else
 			{
 				bool found = false;
-				for (int i = 0; i < asset.favs.Count; i++)
+				for (int i = 0; i < data.favs.Count; i++)
 				{
-					if (asset.favs[i] == ele.fav)
+					if (data.favs[i] == ele.fav)
 					{
 						found = true;
-						asset.favs.RemoveAt(i);
-						EditorUtility.SetDirty(asset);
+						data.favs.RemoveAt(i);
+						EditorUtility.SetDirty(data);
 						break;
 					}
 				}
@@ -187,19 +187,19 @@ namespace FavouritesEd
 			Repaint();			
 		}
 
-		private FavouritesAsset LoadAsset()
+		private FavouritesData LoadAsset()
 		{			
 			string[] guids = AssetDatabase.FindAssets("t:FavouritesAsset");
 			string fn = (guids.Length > 0 ? AssetDatabase.GUIDToAssetPath(guids[0]) : GetPackageFolder() + "FavouritesAsset.asset");
-			asset = AssetDatabase.LoadAssetAtPath<FavouritesAsset>(fn);
-			if (asset == null)
+			data = AssetDatabase.LoadAssetAtPath<FavouritesData>(fn);
+			if (data == null)
 			{
-				asset = CreateInstance<FavouritesAsset>();
-				AssetDatabase.CreateAsset(asset, fn);
+				data = CreateInstance<FavouritesData>();
+				AssetDatabase.CreateAsset(data, fn);
 				AssetDatabase.SaveAssets();
 			}
 
-			return asset;
+			return data;
 		}
 
 		private string GetPackageFolder()

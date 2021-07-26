@@ -15,7 +15,7 @@ namespace FavouritesEd
 		public TreeModel<FavouritesTreeElement> Model { get { return model; } }
 		private TreeModel<FavouritesTreeElement> model;
 
-		private FavouritesAsset asset;
+		private FavouritesData _data;
 
 		// ------------------------------------------------------------------------------------------------------------
 
@@ -38,9 +38,9 @@ namespace FavouritesEd
 			}
 		}
 
-		public void LoadAndUpdate(FavouritesAsset favsAsset = null)
+		public void LoadAndUpdate(FavouritesData favsData = null)
 		{
-			if (favsAsset != null) asset = favsAsset;
+			if (favsData != null) _data = favsData;
 
 			// add root
 			FavouritesTreeElement treeRoot = new FavouritesTreeElement() { ID = 0, Depth = -1, Name = "Root" };
@@ -49,7 +49,7 @@ namespace FavouritesEd
 			// add categories
 			List<FavouritesTreeElement> categories = new List<FavouritesTreeElement>();
 			Texture2D icon = EditorGUIUtility.IconContent(FolderIconName()).image as Texture2D;
-			foreach (FavouritesCategory c in asset.categories)
+			foreach (FavouritesCategory c in _data.categories)
 			{
 				FavouritesTreeElement ele = new FavouritesTreeElement()
 				{
@@ -65,7 +65,7 @@ namespace FavouritesEd
 
 			// add favourites from project and scene(s)
 			List<FavouritesElement> favs = new List<FavouritesElement>();
-			favs.AddRange(asset.favs);
+			favs.AddRange(_data.favs);
 
 			// add from scene(s)
 			foreach (FavouritesContainer c in FavouritesEd.Containers)
@@ -165,7 +165,7 @@ namespace FavouritesEd
 
 		protected override bool CanStartDrag(CanStartDragArgs args)
 		{
-			if (asset == null || asset.categories.Count == 0 || 
+			if (_data == null || _data.categories.Count == 0 || 
 				!rootItem.hasChildren || args.draggedItem.parent == rootItem)
 			{
 				return false;
@@ -189,7 +189,7 @@ namespace FavouritesEd
 
 		protected override DragAndDropVisualMode HandleDragAndDrop(DragAndDropArgs args)
 		{
-			if (asset == null || asset.categories.Count == 0 || !rootItem.hasChildren)
+			if (_data == null || _data.categories.Count == 0 || !rootItem.hasChildren)
 			{
 				return DragAndDropVisualMode.Rejected;
 			}
@@ -254,7 +254,7 @@ namespace FavouritesEd
 						if ((obj as Component) != null) continue;
 
 						// else, probably something from project panel
-						asset.favs.Add(new FavouritesElement()
+						_data.favs.Add(new FavouritesElement()
 						{
 							obj = obj,
 							categoryId = categoryId
@@ -262,7 +262,7 @@ namespace FavouritesEd
 					}
 				}
 				
-				EditorUtility.SetDirty(asset);
+				EditorUtility.SetDirty(_data);
 				LoadAndUpdate();
 			}
 

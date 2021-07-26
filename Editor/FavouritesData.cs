@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FavouritesEd
 {
-	public class FavouritesAsset: ScriptableObject
+	public class FavouritesData: ScriptableObject
 	{
 		public List<FavouritesElement> favs = new List<FavouritesElement>();
 		public List<FavouritesCategory> categories = new List<FavouritesCategory>();
