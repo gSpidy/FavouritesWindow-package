@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Experimental;
@@ -65,33 +66,27 @@ namespace FavouritesEd
 
 			// add favourites from project and scene(s)
 			List<FavouritesElement> favs = new List<FavouritesElement>();
-			favs.AddRange(_data.favs);
-
-			// add from scene(s)
-			foreach (FavouritesContainer c in FavouritesEd.Containers)
-			{
-				if (c == null || c.favs == null) continue;
-				favs.AddRange(c.favs);
-			}
+			favs.AddRange(_data.favs.Where(x=>x.Obj));
 
 			// sort
 			favs.Sort((a, b) => 
 			{
 				int r = a.categoryId.CompareTo(b.categoryId);
-				if (r == 0 && a.obj != null && b.obj != null) r = a.obj.name.CompareTo(b.obj.name);
+				if (r == 0) r = a.Obj.name.CompareTo(b.Obj.name);
 				return r;
 			});
 
 			// and add to tree
 			foreach (FavouritesElement ele in favs)
 			{
-				if (ele == null || ele.obj == null) continue;
+				Object obj;
+				if (ele == null || (obj = ele.Obj) == null) continue;
 				foreach (FavouritesTreeElement c in categories)
 				{
 					if (c.category.id == ele.categoryId)
 					{
-						string nm = ele.obj.name;
-						GameObject go = ele.obj as GameObject;
+						string nm = obj.name;
+						GameObject go = obj as GameObject;
 						if (go != null && go.scene.IsValid())
 						{
 							nm = string.Format("{0} ({1})", nm, go.scene.name);
@@ -101,7 +96,7 @@ namespace FavouritesEd
 						//	nm = string.Format("{0} ({1})", nm, AssetDatabase.GetAssetPath(ele.obj));
 						//}
 
-						icon = AssetPreview.GetMiniTypeThumbnail(ele.obj.GetType());
+						icon = AssetPreview.GetMiniTypeThumbnail(obj.GetType());
 
 						model.QuickAddElement(new FavouritesTreeElement()
 						{
@@ -138,18 +133,18 @@ namespace FavouritesEd
 		{
 			int id = (int)arg;
 			FavouritesTreeElement ele = Model.Find(id);
-			if (ele != null && ele.fav != null && ele.fav.obj != null)
+			if (ele != null && ele.fav != null && ele.fav.Obj != null)
 			{
-				EditorGUIUtility.PingObject(ele.fav.obj);
+				EditorGUIUtility.PingObject(ele.fav.Obj);
 			}
 		}
 
 		protected override void DoubleClickedItem(int id)
 		{
 			FavouritesTreeElement ele = Model.Find(id);
-			if (ele != null && ele.fav != null && ele.fav.obj != null)
+			if (ele != null && ele.fav != null && ele.fav.Obj != null)
 			{
-				AssetDatabase.OpenAsset(ele.fav.obj);				
+				AssetDatabase.OpenAsset(ele.fav.Obj);				
 			}
 			else
 			{
@@ -179,12 +174,13 @@ namespace FavouritesEd
 			if (args.draggedItemIDs.Count == 0) return;
 
 			FavouritesTreeElement item = Model.Find(args.draggedItemIDs[0]);
-			if (item == null || item.fav == null || item.fav.obj == null) return;
+			Object obj;
+			if (item == null || item.fav == null || (obj = item.fav.Obj) == null) return;
 
 			DragAndDrop.PrepareStartDrag();
 			DragAndDrop.SetGenericData(DragAndDropID, item);
-			DragAndDrop.objectReferences = new Object[] { item.fav.obj };
-			DragAndDrop.StartDrag(item.fav.obj.name);
+			DragAndDrop.objectReferences = new Object[] { obj };
+			DragAndDrop.StartDrag(obj.name);
 		}
 
 		protected override DragAndDropVisualMode HandleDragAndDrop(DragAndDropArgs args)
@@ -229,7 +225,7 @@ namespace FavouritesEd
 
 					// check if in scene and mark scene dirty, else do nothing
 					// more since asset is marked dirty at end anyway
-					GameObject go = draggedEle.fav.obj as GameObject;
+					GameObject go = draggedEle.fav.Obj as GameObject;
 					if (go != null && go.scene.IsValid())
 					{
 						EditorSceneManager.MarkSceneDirty(go.scene);
@@ -242,47 +238,22 @@ namespace FavouritesEd
 					Object[] objs = DragAndDrop.objectReferences;
 					foreach (Object obj in objs)
 					{
-						// check if in scene
-						GameObject go = obj as GameObject;
-						if (go != null && go.scene.IsValid())
-						{
-							AddToSceneFavs(go, categoryId);
-							continue;
-						}
-
 						// make sure it is not a component
-						if ((obj as Component) != null) continue;
+						if (obj is Component) continue;
 
-						// else, probably something from project panel
 						_data.favs.Add(new FavouritesElement()
 						{
-							obj = obj,
+							objId = GlobalObjectId.GetGlobalObjectIdSlow(obj).ToString(),
 							categoryId = categoryId
 						});
 					}
 				}
 				
-				EditorUtility.SetDirty(_data);
+				_data.Save();
 				LoadAndUpdate();
 			}
 
 			return DragAndDropVisualMode.Generic;
-		}
-
-		// ------------------------------------------------------------------------------------------------------------
-
-		private void AddToSceneFavs(GameObject go, int categoryId)
-		{
-			FavouritesContainer container = FavouritesEd.GetContainer(go.scene);
-			if (container == null) return; // just in case
-
-			container.favs.Add(new FavouritesElement()
-			{
-				categoryId = categoryId,
-				obj = go
-			});
-
-			EditorSceneManager.MarkSceneDirty(go.scene);
 		}
 
 		private static string FolderIconName()

@@ -1,17 +1,16 @@
 {
     "name": "FavouritesTool.Editor",
     "rootNamespace": "",
-    "references": [
-        "FavouritesTool.Runtime",
-        "UnityEditor.UI"
-    ],
+    "references": [],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Newtonsoft.Json.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],

@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
-using UnityEditor.SceneManagement;
 
 namespace FavouritesEd
 {
@@ -21,7 +20,7 @@ namespace FavouritesEd
 		[MenuItem("Window/Favourites")]
 		private static void ShowWindow()
 		{
-			GetWindow<FavouritesEdWindow>("Favourites").UpdateTreeview();
+			GetWindow<FavouritesEdWindow>("Favourites");//.UpdateTreeview();
 		}
 
 		private void OnHierarchyChange()
@@ -36,10 +35,8 @@ namespace FavouritesEd
 
 		private void UpdateTreeview()
 		{
-			if (data == null)
-			{
-				LoadAsset();
-			}
+			if (data == null) 
+				data = FavouritesData.Load();
 
 			if (treeViewState == null)
 				treeViewState = new TreeViewState();
@@ -98,7 +95,7 @@ namespace FavouritesEd
 			if (string.IsNullOrEmpty(s)) return;
 
 			data.AddCategory(s);
-			EditorUtility.SetDirty(data);
+			data.Save();
 
 			UpdateTreeview();
 			Repaint();
@@ -117,7 +114,7 @@ namespace FavouritesEd
 				// remove elements from open scene. those in closed scenes will just
 				// have to stay. they will not show up anyway if category is gone
 
-				// remove from scene
+				/*// remove from scene
 				foreach (FavouritesContainer c in FavouritesEd.Containers)
 				{
 					if (c == null || c.favs == null) continue;
@@ -129,7 +126,7 @@ namespace FavouritesEd
 							EditorSceneManager.MarkSceneDirty(c.gameObject.scene);
 						}
 					}
-				}
+				}*/
 
 				// remove favourites linked to this category
 				for (int i = data.favs.Count - 1; i >= 0; i--)
@@ -147,7 +144,7 @@ namespace FavouritesEd
 					}
 				}
 
-				EditorUtility.SetDirty(data);
+				data.Save();
 			}
 			else
 			{
@@ -158,14 +155,14 @@ namespace FavouritesEd
 					{
 						found = true;
 						data.favs.RemoveAt(i);
-						EditorUtility.SetDirty(data);
+						data.Save();
 						break;
 					}
 				}
 
 				if (!found)
 				{
-					foreach (FavouritesContainer c in FavouritesEd.Containers)
+					/*foreach (FavouritesContainer c in FavouritesEd.Containers)
 					{
 						if (c == null || c.favs == null) continue;
 						for (int i = 0; i < c.favs.Count; i++)
@@ -179,27 +176,12 @@ namespace FavouritesEd
 							}
 						}
 						if (found) break;
-					}
+					}*/
 				}
 			}
 
 			UpdateTreeview();
 			Repaint();			
-		}
-
-		private FavouritesData LoadAsset()
-		{			
-			string[] guids = AssetDatabase.FindAssets("t:FavouritesAsset");
-			string fn = (guids.Length > 0 ? AssetDatabase.GUIDToAssetPath(guids[0]) : GetPackageFolder() + "FavouritesAsset.asset");
-			data = AssetDatabase.LoadAssetAtPath<FavouritesData>(fn);
-			if (data == null)
-			{
-				data = CreateInstance<FavouritesData>();
-				AssetDatabase.CreateAsset(data, fn);
-				AssetDatabase.SaveAssets();
-			}
-
-			return data;
 		}
 
 		private string GetPackageFolder()

@@ -11,8 +11,7 @@ This will add a new panel with a Tree View where you add categories and can drag
 
 ### Technical Info
 
-The favourites system's main asset file is saved next to the editor scripts, so that would be in `\Assets\Favourites\Editor` by default.
-
-The list of favourite scene objects however are saved in an object in the scene since assets/prefabs can't reference objects in the scene. This object is tagged as editor only so it will not end up in your final builds. You will also notice that when you close the scene the favourite scene objects will disapear from the list of favourites. It will be back when you open the scene and did not delete the category the objects was under.
+**Since v0.2.0** this package uses unity's GlobalObjectId (added in 2019.2) and saves all data in EditorPrefs so that different users on different machines can pin different favourites.
+You no longer need to save any additional data in assets nor on your scenes.
 
 ![screenshot](https://user-images.githubusercontent.com/837362/34055429-d059f5ce-e1d7-11e7-8855-1b19dc2ad052.png)
