@@ -115,7 +115,7 @@ namespace FavouritesEd
 			Init(model);
 			Reload();
 			SetSelection(new List<int>());
-		}		
+		}
 
 		protected override void RowGUI(RowGUIArgs args)
 		{
@@ -139,16 +139,25 @@ namespace FavouritesEd
 			}
 		}
 
+		protected override void SingleClickedItem(int id)
+		{
+			FavouritesTreeElement ele = Model.Find(id);
+			if (ele != null && ele.fav != null && ele.fav.Obj != null)
+			{
+				Selection.activeObject = ele.fav.Obj;
+			}
+		}
+
 		protected override void DoubleClickedItem(int id)
 		{
 			FavouritesTreeElement ele = Model.Find(id);
 			if (ele != null && ele.fav != null && ele.fav.Obj != null)
 			{
-				AssetDatabase.OpenAsset(ele.fav.Obj);				
+				AssetDatabase.OpenAsset(ele.fav.Obj);
 			}
 			else
 			{
-				SetExpanded(id, !IsExpanded(id));				
+				SetExpanded(id, !IsExpanded(id));
 			}
 		}
 
@@ -156,7 +165,6 @@ namespace FavouritesEd
 		{
 			return false;
 		}
-
 
 		protected override bool CanStartDrag(CanStartDragArgs args)
 		{
