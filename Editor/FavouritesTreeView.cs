@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.Experimental;
 using UnityEditor.IMGUI.Controls;
 using UnityEditor.SceneManagement;
 
@@ -49,7 +49,7 @@ namespace FavouritesEd
 
 			// add categories
 			List<FavouritesTreeElement> categories = new List<FavouritesTreeElement>();
-			Texture2D icon = EditorGUIUtility.IconContent(FolderIconName()).image as Texture2D;
+			Texture2D icon = EditorGUIUtility.IconContent("FolderFavorite Icon").image as Texture2D;
 			foreach (FavouritesCategory c in _data.categories)
 			{
 				FavouritesTreeElement ele = new FavouritesTreeElement()
@@ -96,7 +96,7 @@ namespace FavouritesEd
 						//	nm = string.Format("{0} ({1})", nm, AssetDatabase.GetAssetPath(ele.obj));
 						//}
 
-						icon = AssetPreview.GetMiniTypeThumbnail(obj.GetType());
+						icon = AssetPreview.GetMiniThumbnail(obj);
 
 						model.QuickAddElement(new FavouritesTreeElement()
 						{
@@ -258,7 +258,10 @@ namespace FavouritesEd
 
 		private static string FolderIconName()
 		{
-			return EditorResources.folderIconName;
+			var sb = new StringBuilder("FolderFavorite Icon");
+			if (EditorGUIUtility.isProSkin)
+				sb.Insert(0, "d_");
+			return sb.ToString();
 		}
 
 		// ------------------------------------------------------------------------------------------------------------
