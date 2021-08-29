@@ -49,7 +49,7 @@ namespace FavouritesEd
 
 			// add categories
 			List<FavouritesTreeElement> categories = new List<FavouritesTreeElement>();
-			Texture2D icon = EditorGUIUtility.IconContent("FolderFavorite Icon").image as Texture2D;
+			Texture2D icon = EditorGUIUtility.IconContent(FolderIconName()).image as Texture2D;
 			foreach (FavouritesCategory c in _data.categories)
 			{
 				FavouritesTreeElement ele = new FavouritesTreeElement()
