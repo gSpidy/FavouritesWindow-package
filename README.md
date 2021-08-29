@@ -15,3 +15,19 @@ This will add a new panel with a Tree View where you add categories and can drag
 You no longer need to save any additional data in assets nor on your scenes.
 
 ![screenshot](https://user-images.githubusercontent.com/837362/34055429-d059f5ce-e1d7-11e7-8855-1b19dc2ad052.png)
+
+## Installation
+
+### Requirement
+
+* Unity 2019.2 or later
+
+### via Package Manager
+
+Click `+` button in package manager ui, then select `Add package from git URL...` and paste repo url there (ending with `.git`)
+
+To update the package, find the `manifest.json` file in the `Packages` directory in your project and change suffix `#{version}` to the target version.
+
+* e.g. `"com.tools.favourites": "https://github.com/.../FavouritesWindow-package.git#v1.0.0",`
+
+Or, use [UpmGitExtension](https://github.com/mob-sakai/UpmGitExtension) to install and update the package.
