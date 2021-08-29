@@ -10,6 +10,9 @@ namespace FavouritesEd
 	public class FavouritesData
 	{
 		private const string PREF_NAME = "FavWndData";
+
+		public static string SaveName => $"{PREF_NAME}:{PlayerSettings.productGUID}";
+		public static string FallbackSaveName => PREF_NAME;
 		
 		public List<FavouritesElement> favs = new List<FavouritesElement>();
 		public List<FavouritesCategory> categories = new List<FavouritesCategory>();
@@ -31,12 +34,16 @@ namespace FavouritesEd
 
 		public void Save()
 		{
-			EditorPrefs.SetString(PREF_NAME, JsonConvert.SerializeObject(this));
+			EditorPrefs.SetString(SaveName, JsonConvert.SerializeObject(this));
 		}
 
 		public static FavouritesData Load()
 		{
-			var saved = EditorPrefs.GetString(PREF_NAME, null);
+			var saveId = EditorPrefs.HasKey(SaveName)
+				? SaveName
+				: FallbackSaveName;
+			
+			var saved = EditorPrefs.GetString(saveId, null);
 
 			return string.IsNullOrWhiteSpace(saved)
 				? new FavouritesData()
