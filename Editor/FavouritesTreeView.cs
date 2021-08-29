@@ -230,14 +230,6 @@ namespace FavouritesEd
 				if (draggedEle != null)
 				{
 					draggedEle.fav.categoryId = categoryId;
-
-					// check if in scene and mark scene dirty, else do nothing
-					// more since asset is marked dirty at end anyway
-					GameObject go = draggedEle.fav.Obj as GameObject;
-					if (go != null && go.scene.IsValid())
-					{
-						EditorSceneManager.MarkSceneDirty(go.scene);
-					}
 				}
 
 				// else the drag-drop originated somewhere else
@@ -248,6 +240,13 @@ namespace FavouritesEd
 					{
 						// make sure it is not a component
 						if (obj is Component) continue;
+
+						if (Application.isPlaying) // reject scene objects in playmode
+						{
+							var go = obj as GameObject;
+							if(go!=null && go.scene.IsValid())
+								continue;
+						}
 
 						_data.favs.Add(new FavouritesElement()
 						{

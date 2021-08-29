@@ -25,6 +25,7 @@ namespace FavouritesEd
 
 		private void OnHierarchyChange()
 		{
+			if(Application.isPlaying) return;
 			UpdateTreeview();
 		}
 
